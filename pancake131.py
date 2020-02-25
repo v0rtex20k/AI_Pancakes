@@ -1,7 +1,7 @@
 # Victor Arsenescu
 # 2/20/20
 # COMP 131 HW 2
-import time
+import random
 
 class Node(object):
 	"""Each node has a pancake list and scores"""
@@ -17,54 +17,56 @@ class Node(object):
 		return h
 
 def flip(pancakes, i):
-    flippy = pancakes[-i:]
-    flippy.reverse()
-    end = len(pancakes) - i
-    return pancakes[:end] + flippy
+	if i == 0:
+		pancakes.reverse()
+		return pancakes
+	flippy = pancakes[-i:]
+	flippy.reverse()
+	end = len(pancakes) - i
+	return pancakes[:end] + flippy
 
 def generate_successors(smallest):
-	successors = []
+	successors = set()
 	for i in range(1, len(smallest.pancakes)): # can't flip zero pancakes
-		successors.append(Node(flip(smallest.pancakes, i+1), smallest.backwards + 1))
+		successors.add(Node(flip(smallest.pancakes, i+1), smallest.backwards + i))
 	return successors
 
 def isGoal(node):
 	return True if node.forwards == 0 else False
 
-def A_star(initial_state, generate_successors, isGoal):
-	'''
-	Arguments: 
-	- state_space is some list-like structure of length k.
-	- successor is a function that returns a new state - aka modifies P.
-	- path and heuristics are functions that return the relevant values.
-	- isGoal is a function which performs a goal check and returns T/F.
-	'''
-	expanded, frontier = [], [initial_state]
+
+def A_star(initial_node, generate_successors, isGoal):
+	i = 1
+	path, expanded, frontier = {}, {}, {str(initial_node.pancakes) : initial_node}
+	successors = set()
 	while frontier: 
-		smallest = min(frontier, key=lambda node: node.forwards) 
-		#print("Frontier: {} ".format([n.pancakes for n in frontier]))
-		print("Smallest: {} --> {} / {}".format(smallest.pancakes, smallest.total_score, smallest.forwards))
-		frontier.remove(smallest)
-		#print("REMOVED SMALLEST: {}".format([n.pancakes for n in frontier]))
+		key, smallest = min(frontier.items(), key=lambda pair: pair[1].total_score)
+		print("Smallest: {} ({})".format(key, i))
+		i += 1
+		frontier.pop(key)
 		if isGoal(smallest):
-			return smallest.pancakes
-		expanded.append(smallest)
-		successors = generate_successors(smallest)
-		#print("Successors: {}".format([s.pancakes for s in successors]))
-		#print("Successor Heuristics: {}".format([s.forwards for s in successors]))
-		for successor in successors:
-			if successor in expanded:
-				continue
-			if successor in frontier:
-				frontier[frontier.index(successor)] = min(successor, frontier[frontier.index(successor)], key=lambda node: node.total_score)
-			elif successor in expanded:
-				expanded[expanded.index(successor)] = min(successor, expanded[expanded.index(successor)], key=lambda node: node.total_score)
+			if smallest.pancakes[0] < smallest.pancakes[-1]:
+				return flip(smallest.pancakes, 0), path
 			else:
-				frontier.append(successor)
+				return smallest.pancakes, path
+		path[str(smallest.pancakes)] = smallest
+		expanded[str(smallest.pancakes)] = smallest
+		successors = generate_successors(smallest)
+		for successor in successors:
+			if str(successor.pancakes) in frontier:
+					frontier[str(successor.pancakes)] = min(successor, frontier[str(successor.pancakes)], key=lambda node: node.total_score )
+			else:
+				if not str(successor.pancakes) in expanded:
+					frontier[str(successor.pancakes)] = successor
+			expanded[str(successor.pancakes)] = successor
 		print("."*50)
 	return None
 
 if __name__ == '__main__':
-	pancakes = [1,4,12,3,7,10,6,8,2,9,5,11]
-	initial = Node(pancakes, 0)
-	A_star(initial, generate_successors, isGoal)
+	pancakes = [i for i in range(1,6)]
+	random.shuffle(pancakes)
+	initial_node = Node(pancakes, 0)
+	stack, path = A_star(initial_node, generate_successors, isGoal)
+	for step in path:
+		print("{} ---> ".format(step), end=" ")
+	print(stack)
