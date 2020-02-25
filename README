@@ -8,8 +8,7 @@
         Flip(P, x) gives us a new state P = [p1, p2, ... pk, pk-1, ... px]
         1.4: Goal Test: If for all i in range [0,k-1], P[i] + 1 = P[i+1].
         1.5: Path Cost: Each flip we do costs us 1.
-2. Backward Cost: Number of flips we've done, regardless of how MANY pancakes
-were actually flipped at one time.
+2. Backward Cost: Number of pancakes we flip each time.
 3. Forward Cost: As suggested by the article, our heuristic could be the number
 of pancakes that are NOT adjacent to their ideal neighbor pancake (size +- 1).
 4. See python file. 
