@@ -1,7 +1,6 @@
-# Victor Arsenescu
-# 2/20/20
+# Victor Arsenescu and Ethan Sorkin
+# 2/24/20
 # COMP 131 HW 2
-import random
 
 class Node(object):
 	"""Each node has a pancake list and scores"""
@@ -61,8 +60,7 @@ def A_star(initial_node, generate_successors, isGoal):
 	return None
 
 if __name__ == '__main__':
-	pancakes = [i for i in range(1,9)]
-	random.shuffle(pancakes)
+	pancakes = [1,2,3,4,5,6,7,8] # change this to add more pancakes
 	initial_node = Node(pancakes, 0)
 	stack, path = A_star(initial_node, generate_successors, isGoal)
 	for step in path:
