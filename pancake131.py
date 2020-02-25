@@ -41,7 +41,6 @@ def A_star(initial_node, generate_successors, isGoal):
 	successors = set()
 	while frontier: 
 		key, smallest = min(frontier.items(), key=lambda pair: pair[1].total_score)
-		print("Smallest: {} ({})".format(key, i))
 		i += 1
 		frontier.pop(key)
 		if isGoal(smallest):
@@ -59,14 +58,13 @@ def A_star(initial_node, generate_successors, isGoal):
 				if not str(successor.pancakes) in expanded:
 					frontier[str(successor.pancakes)] = successor
 			expanded[str(successor.pancakes)] = successor
-		print("."*50)
 	return None
 
 if __name__ == '__main__':
-	pancakes = [i for i in range(1,6)]
+	pancakes = [i for i in range(1,9)]
 	random.shuffle(pancakes)
 	initial_node = Node(pancakes, 0)
 	stack, path = A_star(initial_node, generate_successors, isGoal)
 	for step in path:
-		print("{} ---> ".format(step), end=" ")
+		print("{}".format(step), end = " ---> ")
 	print(stack)
